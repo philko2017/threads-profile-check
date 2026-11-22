@@ -1,0 +1,310 @@
+{
+  "id": "threadsProfileAudit1",
+  "name": "Threads 首頁體檢器｜AI 深度診斷與改寫",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei"
+  },
+  "nodes": [
+    {
+      "id": "tpa-000-0000-4000-8000-000000000000",
+      "name": "體檢表單送入",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "threads-profile-audit",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "webhookId": "a91b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
+    },
+    {
+      "id": "tpa-001-0000-4000-8000-000000000000",
+      "name": "驗證與組裝 Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const b = ($input.first().json.body) || {};\nconst R = (status, obj) => [{ json: { out: 0, status, res: JSON.stringify(obj) } }];\n\nif (b.website_hp && String(b.website_hp).trim() !== '') {\n  return R(400, { ok: false, error: 'rejected' });\n}\n\nconst clean = (v, max) => String(v || '').replace(/\\r\\n/g, '\\n').trim().slice(0, max);\nconst role = clean(b.role || 'creator', 24);\nconst displayName = clean(b.displayName, 60);\nconst handle = clean(b.handle, 50).replace(/^@+/, '');\nconst bio = clean(b.bio, 300);\nconst linkUrl = clean(b.linkUrl, 200);\nconst linkLabel = clean(b.linkLabel, 60);\nconst topics = Array.isArray(b.topics) ? b.topics.slice(0, 3).map((t) => clean(t, 24)).filter(Boolean) : [];\nconst pinnedPost = clean(b.pinnedPost, 400);\n\nif (!displayName && !bio) {\n  return R(400, { ok: false, error: 'empty' });\n}\n\nconst roleMap = {\n  personal: '個人生活／交朋友',\n  freelancer: '一人接案／工作室',\n  shop: '實體小店／網店老闆',\n  creator: '知識分享／創作者',\n  sidehustle: '上班族副業／斜槓經營',\n};\n\nconst prompt = [\n  '你是一位懂台灣 Threads 生態、說話白話親切、絕不講行銷黑話也絕不說教的顧問，正在幫「完全沒學過 AI 或行銷的初心者」體檢他的 Threads 個人首頁。',\n  '',\n  '請根據以下使用者填寫的首頁草稿進行評分與改寫：',\n  `- 帳號方向：${roleMap[role] || role}`,\n  `- 顯示名稱：${displayName || '（未填）'}`,\n  `- 帳號 ID：${handle ? '@' + handle : '（未填）'}`,\n  `- 個人簡介：\\n${bio || '（未填）'}`,\n  `- 外部連結：${linkUrl || '（無）'}${linkLabel ? '（文字：' + linkLabel + '）' : ''}`,\n  `- 主題標籤：${topics.length ? topics.join('、') : '（未填）'}`,\n  `- 置頂串文：${pinnedPost || '（無）'}`,\n  '',\n  '請嚴格遵守以下要求回傳 JSON：',\n  '1. 使用台灣繁體中文，語氣鼓勵、直接講人話。',\n  '2. dimensions 必須恰好有 5 項，每項滿分 20 分，key 與 label 固定為：',\n  '   - clarity / 定位清楚度',\n  '   - audienceValue / 受眾與價值',\n  '   - completeness / 資訊完整度',\n  '   - readability / 視覺易讀性',\n  '   - cta / 行動引導力',\n  '3. total 等於 5 項分數加總（0-100），grade 為 S (>=88)、A (>=75)、B (>=55)、C (<55)。',\n  '4. suggestions 給 3～4 條具體優先修改建議，priority 只能用 high、medium 或 good，每條都要附可直接抄用的簡短 example。',\n  '5. rewrites 必須給 3 個不同風格（例如：親切好聊版、專業秒懂版、記憶點亮眼版），且每一版：',\n  '   - displayName 絕對不可超過 30 字元',\n  '   - bio 絕對不可超過 145 字元（保留換行，排成 3～4 行，最後一行有明確但不壓迫的下一步行動）',\n  '6. 提醒：Threads 名稱與帳號 14 天內改動次數有限、簡介裡的網址無法點擊，評點時可貼心順帶提醒。',\n].join('\\n');\n\nreturn [{\n  json: {\n    out: 1,\n    models: [\"gemini-3.5-flash-lite\", \"gemini-3.1-flash-lite\"],\n    gemini: {\n      contents: [{ role: 'user', parts: [{ text: prompt }] }],\n      generationConfig: {\n        temperature: 0.7,\n        responseMimeType: 'application/json',\n        responseSchema: {\"type\": \"OBJECT\", \"required\": [\"total\", \"grade\", \"badgeTitle\", \"summary\", \"dimensions\", \"suggestions\", \"rewrites\"], \"properties\": {\"total\": {\"type\": \"INTEGER\"}, \"grade\": {\"type\": \"STRING\"}, \"badgeTitle\": {\"type\": \"STRING\"}, \"summary\": {\"type\": \"STRING\"}, \"dimensions\": {\"type\": \"ARRAY\", \"items\": {\"type\": \"OBJECT\", \"required\": [\"key\", \"label\", \"score\", \"comment\"], \"properties\": {\"key\": {\"type\": \"STRING\"}, \"label\": {\"type\": \"STRING\"}, \"score\": {\"type\": \"INTEGER\"}, \"comment\": {\"type\": \"STRING\"}}}}, \"suggestions\": {\"type\": \"ARRAY\", \"items\": {\"type\": \"OBJECT\", \"required\": [\"priority\", \"title\", \"detail\", \"example\"], \"properties\": {\"priority\": {\"type\": \"STRING\"}, \"title\": {\"type\": \"STRING\"}, \"detail\": {\"type\": \"STRING\"}, \"example\": {\"type\": \"STRING\"}}}}, \"rewrites\": {\"type\": \"ARRAY\", \"items\": {\"type\": \"OBJECT\", \"required\": [\"style\", \"tag\", \"reason\", \"displayName\", \"bio\"], \"properties\": {\"style\": {\"type\": \"STRING\"}, \"tag\": {\"type\": \"STRING\"}, \"reason\": {\"type\": \"STRING\"}, \"displayName\": {\"type\": \"STRING\"}, \"bio\": {\"type\": \"STRING\"}}}}}},\n      },\n    },\n  },\n}];"
+      }
+    },
+    {
+      "id": "tpa-002-0000-4000-8000-000000000000",
+      "name": "分流",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        200
+      ],
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 2,
+        "output": "={{ $json.out }}"
+      }
+    },
+    {
+      "id": "tpa-003-0000-4000-8000-000000000000",
+      "name": "回傳檢查錯誤",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        40
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.res }}",
+        "options": {
+          "responseCode": "={{ $json.status }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "tpa-004-0000-4000-8000-000000000000",
+      "name": "Gemini 主診斷",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        260
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $('驗證與組裝 Prompt').first().json.models[0] }}:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('驗證與組裝 Prompt').first().json.gemini) }}",
+        "options": {
+          "timeout": 22000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "o1AnWSfmcx5uPMEz",
+          "name": "Gemini API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "tpa-005-0000-4000-8000-000000000000",
+      "name": "Gemini 備援診斷",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $('驗證與組裝 Prompt').first().json.models[1] }}:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('驗證與組裝 Prompt').first().json.gemini) }}",
+        "options": {
+          "timeout": 22000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "o1AnWSfmcx5uPMEz",
+          "name": "Gemini API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "tpa-006-0000-4000-8000-000000000000",
+      "name": "解析與整理結果",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        260
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const rawText = $input.first().json?.candidates?.[0]?.content?.parts?.[0]?.text || '';\nconst trimLen = (s, max) => {\n  const chars = Array.from(String(s || '').trim());\n  while (chars.join('').length > max) chars.pop();\n  return chars.join('').trim();\n};\n\ntry {\n  const parsed = JSON.parse(rawText);\n  if (Array.isArray(parsed.rewrites)) {\n    parsed.rewrites = parsed.rewrites.slice(0, 3).map((rw) => ({\n      ...rw,\n      displayName: trimLen(rw.displayName || '', 30),\n      bio: trimLen(rw.bio || '', 150),\n    }));\n  }\n  return [{ json: { ok: true, mode: 'ai', report: parsed } }];\n} catch (err) {\n  return [{ json: { ok: false, error: 'parse_failed' } }];\n}"
+      }
+    },
+    {
+      "id": "tpa-007-0000-4000-8000-000000000000",
+      "name": "回傳 AI 結果",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        260
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "tpa-008-0000-4000-8000-000000000000",
+      "name": "回傳 AI 忙碌",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        440
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "{\"ok\":false,\"error\":\"ai_busy\"}",
+        "options": {
+          "responseCode": 503,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "體檢表單送入": {
+      "main": [
+        [
+          {
+            "node": "驗證與組裝 Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "驗證與組裝 Prompt": {
+      "main": [
+        [
+          {
+            "node": "分流",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "分流": {
+      "main": [
+        [
+          {
+            "node": "回傳檢查錯誤",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini 主診斷",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 主診斷": {
+      "main": [
+        [
+          {
+            "node": "解析與整理結果",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini 備援診斷",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 備援診斷": {
+      "main": [
+        [
+          {
+            "node": "解析與整理結果",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "回傳 AI 忙碌",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "解析與整理結果": {
+      "main": [
+        [
+          {
+            "node": "回傳 AI 結果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

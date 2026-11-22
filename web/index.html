@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';" />
+  <title>Threads 首頁體檢器｜改版前先預覽・免費 AI 評分與改寫建議</title>
+  <meta name="description" content="專門給 Threads 新手與一人老闆用的免費首頁預覽＆體檢工具。免登入、不留資料，1:1 模擬手機畫面並即時評分定位清楚度與行動引導，避開 14 天修改限制。" />
+  <meta property="og:site_name" content="Threads 首頁體檢器" />
+  <meta property="og:title" content="Threads 首頁體檢器｜改版前先預覽、免登入測分改寫" />
+  <meta property="og:description" content="怕顯示名稱 14 天限改 2 次改壞被鎖嗎？免登入 1:1 模擬手機 Threads 首頁，即時給 5 大維度評分＋3 版白話改寫建議。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://philko2017.github.io/threads-profile-check/" />
+  <meta property="og:image" content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
+  <meta property="og:image:secure_url" content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Threads 首頁體檢器：免登入 1:1 預覽手機 Threads 首頁並即時評分與改寫" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Threads 首頁體檢器｜改版前先預覽、免登入測分改寫" />
+  <meta name="twitter:description" content="怕顯示名稱 14 天限改 2 次改壞被鎖嗎？免登入 1:1 模擬手機 Threads 首頁，即時給 5 大維度評分＋3 版白話改寫建議。" />
+  <meta name="twitter:image" content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <!-- 頂部導覽列 -->
+    <header class="top-nav">
+      <div class="brand-group">
+        <span class="brand-badge-icon" aria-hidden="true">🩺</span>
+        <div>
+          <h1 class="brand-title">Threads 首頁體檢器</h1>
+          <p class="brand-subtitle">改版前先在這裡預覽測分，不怕被 14 天修改限制卡住</p>
+        </div>
+      </div>
+
+      <div class="top-nav-actions">
+        <span class="trust-pill" title="不需要輸入任何帳號密碼，文字與頭貼只保留在你的瀏覽器中">🔒 免登入・免授權・資料只留本機</span>
+        <button id="btn-open-rules" class="btn-secondary" type="button">📌 平台限制小抄</button>
+      </div>
+    </header>
+
+    <!-- 手機版分頁切換（僅小螢幕顯示） -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="功能切換">
+      <button class="mobile-tab-btn is-active" data-tab="edit" type="button">1. 填寫資料</button>
+      <button class="mobile-tab-btn" data-tab="preview" type="button">2. 首頁預覽</button>
+      <button class="mobile-tab-btn" data-tab="audit" type="button">
+        <span>3. 評分建議</span>
+        <span id="mobile-score-pill" class="mobile-score-pill">0 分</span>
+      </button>
+    </nav>
+
+    <!-- 三欄主工作台 -->
+    <main class="workspace-grid">
+      <!-- 左欄：輸入與新手引導 -->
+      <section id="panel-edit" class="panel panel-edit is-tab-active" aria-label="填寫首頁資料">
+        <div class="panel-header">
+          <div class="mode-switch" role="tablist" aria-label="填寫模式">
+            <button id="btn-mode-free" class="mode-btn is-active" type="button">✍️ 自由填寫</button>
+            <button id="btn-mode-wizard" class="mode-btn" type="button">🪄 3 題快速起稿（新手推薦）</button>
+          </div>
+        </div>
+
+        <!-- 自由填寫區 -->
+        <div id="free-form-wrap" class="panel-body">
+          <div class="sample-bar">
+            <span class="sample-label">一鍵載入範例試玩：</span>
+            <div class="sample-buttons">
+              <button class="sample-btn" data-sample="shop" type="button">🍳 在地小店</button>
+              <button class="sample-btn" data-sample="freelancer" type="button">✂️ 一人接案</button>
+              <button class="sample-btn" data-sample="creator" type="button">💡 知識分享</button>
+              <button class="sample-btn" data-sample="personal" type="button">🐱 生活日常</button>
+              <button id="btn-clear-form" class="sample-btn sample-btn-ghost" type="button">清空重填</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="field-role">你的帳號主要想給誰看？（影響評分重點）</label>
+            <select id="field-role" class="text-input">
+              <option value="creator">知識分享／創作者（希望讓人想追蹤、學到東西）</option>
+              <option value="shop">實體小店／網店老闆（希望讓人看懂賣什麼、在哪裡）</option>
+              <option value="freelancer">一人接案／工作室（希望讓人看懂幫誰解決問題、敢預約）</option>
+              <option value="sidehustle">上班族副業／斜槓經營（下班實作紀錄與小服務）</option>
+              <option value="personal">個人生活／交朋友（輕鬆聊天、有共同話題）</option>
+            </select>
+            <p id="role-hint" class="field-help"></p>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label class="field-label" for="field-name">
+                顯示名稱
+                <span class="limit-chip">14 天限改 2 次</span>
+              </label>
+              <span id="count-name" class="char-counter">0 / 30</span>
+            </div>
+            <input id="field-name" class="text-input" type="text" maxlength="60"
+              placeholder="建議格式：你的暱稱｜一句話說明你在做什麼" />
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label class="field-label" for="field-handle">
+                Threads 帳號 ID
+                <span class="limit-chip">與 IG 同步・14 天限改</span>
+              </label>
+              <span id="count-handle" class="char-counter">0 / 30</span>
+            </div>
+            <div class="handle-input-wrap">
+              <span class="handle-at">@</span>
+              <input id="field-handle" class="text-input text-input-at" type="text" maxlength="40"
+                placeholder="例如：its.all.good.73（僅限英數、點、底線）" />
+            </div>
+            <p id="handle-warn" class="field-error hidden">只能使用英文字母、數字、句點 (.) 與底線 (_)，且不超過 30 字元。</p>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">圓形頭像預覽（僅留在本機瀏覽器，不會上傳）</label>
+            <div class="avatar-row">
+              <div id="avatar-thumb-preview" class="avatar-thumb-preview" aria-hidden="true">三</div>
+              <div class="avatar-controls">
+                <div class="avatar-btn-row">
+                  <input id="avatar-upload" class="hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                  <button id="btn-upload-avatar" class="btn-outline-sm" type="button">📷 選一張照片預覽</button>
+                  <button id="btn-clear-avatar" class="btn-ghost-sm" type="button">改用預設色塊</button>
+                </div>
+                <div id="avatar-presets" class="avatar-presets" aria-label="預設頭像背景色">
+                  <button class="avatar-preset-btn is-active" data-preset="#ea580c" style="background:#ea580c" type="button" title="暖橘"></button>
+                  <button class="avatar-preset-btn" data-preset="#0f766e" style="background:#0f766e" type="button" title="青綠"></button>
+                  <button class="avatar-preset-btn" data-preset="#2563eb" style="background:#2563eb" type="button" title="海軍藍"></button>
+                  <button class="avatar-preset-btn" data-preset="#9333ea" style="background:#9333ea" type="button" title="葡萄紫"></button>
+                  <button class="avatar-preset-btn" data-preset="#be123c" style="background:#be123c" type="button" title="莓果紅"></button>
+                  <button class="avatar-preset-btn" data-preset="#27272a" style="background:#27272a" type="button" title="極簡黑"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label class="field-label" for="field-bio">個人簡介（最多 150 字，建議 3～5 行）</label>
+              <span id="count-bio" class="char-counter">0 / 150・0 行</span>
+            </div>
+            <textarea id="field-bio" class="text-area" rows="5" maxlength="260"
+              placeholder="第 1 行：我是誰／在哪裡&#10;第 2 行：我能提供什麼價值或招牌特色&#10;第 3 行：👇 給訪客的下一步引導"></textarea>
+            <div class="bio-helper-bar">
+              <span class="bio-helper-title">快速插入：</span>
+              <button class="bio-chip-btn" data-insert="｜" type="button">｜</button>
+              <button class="bio-chip-btn" data-insert="👇 " type="button">👇</button>
+              <button class="bio-chip-btn" data-insert="📍 " type="button">📍</button>
+              <button class="bio-chip-btn" data-insert="✨ " type="button">✨</button>
+              <button id="btn-bio-template" class="bio-chip-btn bio-chip-accent" type="button">填入三行黃金格式</button>
+            </div>
+          </div>
+
+          <div class="form-two-col">
+            <div class="form-group">
+              <label class="field-label" for="field-link">唯一外部連結網址</label>
+              <input id="field-link" class="text-input" type="url" maxlength="160"
+                placeholder="https://你的網站、LINE 或地圖" />
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="field-link-label">連結顯示文字（選填）</label>
+              <input id="field-link-label" class="text-input" type="text" maxlength="40"
+                placeholder="例如：點我看今日菜單" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label class="field-label" for="field-topic-input">首頁主題標籤（最多 3 個）</label>
+              <span class="field-help-inline">點建議可快速加入</span>
+            </div>
+            <div id="topics-list" class="topics-edit-list"></div>
+            <div class="topic-add-row">
+              <input id="field-topic-input" class="text-input" type="text" maxlength="20"
+                placeholder="輸入標籤後按新增（例如：台北美食）" />
+              <button id="btn-add-topic" class="btn-outline-sm" type="button">新增標籤</button>
+            </div>
+            <div id="topic-suggestions" class="topic-suggestions"></div>
+          </div>
+
+          <details id="pinned-details" class="pinned-details">
+            <summary>📌 進階選填：預覽第一篇「置頂串文」效果</summary>
+            <div class="pinned-inner">
+              <label class="field-label" for="field-pinned">訪客進你首頁時第一眼會看到的貼文開頭</label>
+              <textarea id="field-pinned" class="text-area" rows="3" maxlength="300"
+                placeholder="例如：新手第一次來我這頁，最推薦先玩這 3 個免費工具…"></textarea>
+            </div>
+          </details>
+
+          <!-- A/B 版本比較工具列 -->
+          <div class="ab-compare-card">
+            <div class="ab-title-row">
+              <strong>⚖️ A / B 版本比較暫存</strong>
+              <span id="ab-diff-text" class="ab-diff-text">存成 A 版與 B 版，馬上比較哪版分數高</span>
+            </div>
+            <div class="ab-btn-grid">
+              <button id="btn-save-a" class="btn-outline-sm" type="button">存為版本 A</button>
+              <button id="btn-load-a" class="btn-ghost-sm" type="button" disabled>載入 A 版</button>
+              <button id="btn-save-b" class="btn-outline-sm" type="button">存為版本 B</button>
+              <button id="btn-load-b" class="btn-ghost-sm" type="button" disabled>載入 B 版</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 題快速起稿精靈（AI 小白模式） -->
+        <div id="wizard-wrap" class="panel-body hidden">
+          <div class="wizard-intro">
+            <h2>完全不會寫？用白話回答 3 題，幫你組出 3 版首頁</h2>
+            <p>不需要懂行銷名詞，就像跟鄰居介紹自己在忙什麼一樣寫就好。</p>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-role">你比較像哪一種身分？</label>
+            <select id="wiz-role" class="text-input">
+              <option value="shop">實體小店／網店老闆</option>
+              <option value="freelancer">一人接案／工作室</option>
+              <option value="creator">知識分享／創作者</option>
+              <option value="sidehustle">上班族副業／斜槓經營</option>
+              <option value="personal">個人生活／交朋友</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-name">你的名字或店名（簡短就好）</label>
+            <input id="wiz-name" class="text-input" type="text" maxlength="20" placeholder="例如：阿安、早安巷口、毛毛慢慢洗" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-who">第 1 題：用最簡單的話講，你是誰、在哪裡做什麼？</label>
+            <input id="wiz-who" class="text-input" type="text" maxlength="60" placeholder="例如：新北新莊的手作蛋餅早餐店" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-value">第 2 題：別人來找你／追蹤你，能得到什麼好處或特色？</label>
+            <input id="wiz-value" class="text-input" type="text" maxlength="70" placeholder="例如：每天現調純米粉漿，外酥內 Q 還能先 LINE 預訂不用等" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-action">第 3 題：你最希望看完首頁的人接下來做哪一件事？</label>
+            <input id="wiz-action" class="text-input" type="text" maxlength="50" placeholder="例如：點下面連結看今日菜單跟 Google 地圖" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="wiz-link">要放什麼連結？（沒有就留空）</label>
+            <input id="wiz-link" class="text-input" type="url" maxlength="160" placeholder="https://你的菜單、LINE 或小工具網址" />
+          </div>
+
+          <button id="btn-wiz-generate" class="btn-primary btn-full" type="button">🪄 幫我組合 3 種首頁草稿</button>
+
+          <div id="wiz-results" class="wiz-results"></div>
+        </div>
+      </section>
+
+      <!-- 中欄：1:1 擬真 Threads 手機首頁預覽 -->
+      <section id="panel-preview" class="panel panel-preview" aria-label="Threads 首頁預覽">
+        <div class="preview-toolbar">
+          <div class="theme-switch" role="group" aria-label="預覽背景主題">
+            <button id="btn-theme-dark" class="theme-btn is-active" type="button">🌙 深色介面</button>
+            <button id="btn-theme-light" class="theme-btn" type="button">☀️ 淺色介面</button>
+          </div>
+          <span id="preview-rule-pill" class="rule-pill rule-ok">✓ 字數符合規定</span>
+        </div>
+
+        <div class="phone-stage">
+          <div id="phone-shell" class="phone-shell" data-theme="dark">
+            <div class="phone-notch" aria-hidden="true"></div>
+            <div class="phone-status-bar" aria-hidden="true">
+              <span>21:30</span>
+              <span>5G ▂▄▆</span>
+            </div>
+
+            <div class="phone-screen">
+              <!-- Threads 頂部 icon 列 -->
+              <div class="threads-top-bar">
+                <span class="threads-top-handle" id="prev-header-handle">its.all.good.73</span>
+                <div class="threads-top-icons" aria-hidden="true">
+                  <span>◎</span>
+                  <span>☰</span>
+                </div>
+              </div>
+
+              <!-- 個人名稱與頭像區 -->
+              <div class="threads-profile-head">
+                <div class="threads-name-col">
+                  <div id="prev-display-name" class="threads-display-name">三寶爸｜帶老闆用 AI 加速</div>
+                  <div id="prev-handle" class="threads-handle">@its.all.good.73</div>
+                </div>
+                <div id="prev-avatar-wrap" class="threads-avatar-wrap">
+                  <img id="prev-avatar-img" class="threads-avatar-img hidden" alt="頭像預覽" />
+                  <div id="prev-avatar-fallback" class="threads-avatar-fallback">三</div>
+                </div>
+              </div>
+
+              <!-- 個人簡介 -->
+              <div id="prev-bio" class="threads-bio"></div>
+              <div id="prev-bio-limit-note" class="threads-limit-note hidden"></div>
+
+              <!-- 粉絲數與連結 -->
+              <div id="prev-meta-row" class="threads-meta-row">
+                <span id="prev-followers-count" class="threads-followers">1,280 位粉絲</span>
+                <span class="threads-meta-dot" aria-hidden="true">・</span>
+                <span id="prev-link-domain" class="threads-link-domain">尚未設定外部連結</span>
+              </div>
+
+              <!-- 主題標籤 Pills -->
+              <div id="prev-topics-row" class="threads-topics-row"></div>
+
+              <!-- 追蹤／提及按鈕 -->
+              <div class="threads-cta-buttons" aria-hidden="true">
+                <div class="threads-btn-follow">追蹤</div>
+                <div class="threads-btn-mention">提及</div>
+              </div>
+
+              <!-- 內容分頁 -->
+              <div class="threads-tabs" aria-hidden="true">
+                <span class="is-active">串文</span>
+                <span>回覆</span>
+                <span>媒體</span>
+                <span>轉發</span>
+              </div>
+
+              <!-- 選填置頂串文預覽 -->
+              <div id="prev-pinned-card" class="threads-pinned-card hidden">
+                <div class="threads-pinned-tag">📌 已置頂</div>
+                <div class="threads-pinned-head">
+                  <strong id="prev-pinned-author">三寶爸</strong>
+                  <span id="prev-pinned-handle">@its.all.good.73</span>
+                  <span>· 1天</span>
+                </div>
+                <p id="prev-pinned-body" class="threads-pinned-body"></p>
+                <div class="threads-post-actions" aria-hidden="true">♡ 42　💬 11　↻ 5　➤</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-export-bar">
+          <button id="btn-copy-name" class="btn-secondary" type="button">📋 複製名稱</button>
+          <button id="btn-copy-bio" class="btn-secondary" type="button">📋 複製簡介</button>
+          <button id="btn-download-card" class="btn-primary" type="button">🖼️ 下載體檢成績單 (PNG)</button>
+        </div>
+      </section>
+
+      <!-- 右欄：AI 評分與修改建議 -->
+      <section id="panel-audit" class="panel panel-audit" aria-label="AI 體檢評分與建議">
+        <div class="panel-body">
+          <!-- 總分卡 -->
+          <div class="score-hero-card">
+            <div class="score-ring-wrap">
+              <svg class="score-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="score-ring-track" cx="60" cy="60" r="50" />
+                <circle id="score-ring-arc" class="score-ring-arc" cx="60" cy="60" r="50" />
+              </svg>
+              <div class="score-ring-center">
+                <span id="score-total-num" class="score-total-num">0</span>
+                <span class="score-total-sub">/ 100</span>
+              </div>
+            </div>
+
+            <div class="score-hero-text">
+              <div class="score-badges-row">
+                <span id="score-grade-pill" class="grade-pill">等級 B</span>
+                <span id="score-mode-badge" class="mode-status-pill">⚡ 即時體檢引擎</span>
+              </div>
+              <h2 id="score-badge-title" class="score-badge-title">載入中...</h2>
+              <p id="score-summary" class="score-summary"></p>
+            </div>
+          </div>
+
+          <!-- 深度 AI 按鈕 -->
+          <div class="ai-action-box">
+            <button id="btn-ai-audit" class="btn-ai btn-full" type="button">✨ AI 深度診斷與量身改寫</button>
+            <p id="ai-status-note" class="ai-status-note">不需登入 Threads，可先看右方即時評分，或點按鈕產生專屬改寫提案。</p>
+          </div>
+
+          <!-- 欄位紅線提醒 -->
+          <div id="audit-warnings" class="audit-warnings"></div>
+
+          <!-- 5 大維度分數條 -->
+          <div class="audit-section">
+            <h3 class="audit-section-title">五大維度體檢明細</h3>
+            <div id="audit-dimensions" class="dimensions-list"></div>
+          </div>
+
+          <!-- 優先修改建議 -->
+          <div class="audit-section">
+            <h3 class="audit-section-title">最值得先改的幾件事</h3>
+            <div id="audit-suggestions" class="suggestions-list"></div>
+          </div>
+
+          <!-- 3 種風格改寫提案 -->
+          <div class="audit-section">
+            <div class="section-head-row">
+              <h3 class="audit-section-title">3 種可直接套用的改寫提案</h3>
+              <button id="btn-undo-rewrite" class="btn-ghost-sm hidden" type="button">↩ 還原剛剛的版本</button>
+            </div>
+            <div id="audit-rewrites" class="rewrites-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部 Footer -->
+    <footer class="site-footer">
+      <span>免費免登入小工具・資料僅存於你的瀏覽器本機・歡迎自由體驗</span>
+      <span>｜</span>
+      <span>製作：@its.all.good.73（三寶爸｜帶老闆用 AI 加速）</span>
+      <span>｜</span>
+      <a href="https://github.com/philko2017/threads-profile-check" target="_blank" rel="noopener noreferrer"
+        style="color:inherit;font-weight:700;">GitHub 開源原始碼</a>
+    </footer>
+  </div>
+
+  <!-- 平台限制小抄彈窗 -->
+  <div id="rules-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="rules-modal-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="rules-modal-title">📌 為什麼先不要直接在 Threads 裡反覆修改？</h2>
+        <button id="btn-close-rules" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
+      </div>
+      <div class="modal-body">
+        <ul class="rules-list">
+          <li><strong>顯示名稱（上限 30 字）：</strong>14 天內最多只能改 <strong>2 次</strong>，一旦把次數用完就得等兩週後才能再改。</li>
+          <li><strong>帳號 ID（@handle）：</strong>與 IG 同步連動，一樣有 <strong>14 天修改冷卻限制</strong>，建議確定好再改，別邊想邊試。</li>
+          <li><strong>個人簡介（上限 150 字）：</strong>雖然隨時可改，但簡介內的網址<strong>不能直接點擊</strong>，加上手機首屏高度有限，建議排成「定位／特色／下一步」<strong>3～5 行</strong>。</li>
+          <li><strong>外部連結（只有 1 個正式欄位）：</strong>Threads 只給一格可點擊網址，放 LINE 官方帳號、Google 地圖、菜單或免費小工具最實用。</li>
+          <li><strong>主題標籤（最多 3 個）：</strong>放上你想被脆友搜尋到的主題，可以讓對你有興趣的人一秒知道這裡聊什麼。</li>
+        </ul>
+      </div>
+      <div class="modal-foot">
+        <button id="btn-close-rules-bottom" class="btn-primary" type="button">知道了，回到工具先排看看</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 輕提示 -->
+  <div id="toast-banner" class="toast-banner hidden" role="status" aria-live="polite"></div>
+
+  <script src="./config.js"></script>
+  <script src="./scorer.js"></script>
+  <script src="./card.js"></script>
+  <script src="./app.js"></script>
+</body>
+
+</html>
