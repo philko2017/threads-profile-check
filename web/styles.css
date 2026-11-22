@@ -107,7 +107,19 @@ body {
   white-space: nowrap;
 }
 
-/* 手機切換列 */
+/* 手機友善提示條與切換列 */
+.mobile-desktop-tip {
+  display: none;
+  padding: 8px 12px;
+  background: #fff7ed;
+  border-bottom: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .mobile-tab-bar {
   display: none;
   gap: 6px;
@@ -1457,6 +1469,10 @@ body {
 
   .trust-pill {
     display: none;
+  }
+
+  .mobile-desktop-tip {
+    display: block;
   }
 
   .mobile-tab-bar {
