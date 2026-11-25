@@ -15,7 +15,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://philko2017.github.io/threads-profile-check/" />
   <meta property="og:image" content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
-  <meta property="og:image:secure_url" content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
+  <meta property="og:image:secure_url"
+    content="https://philko2017.github.io/threads-profile-check/og-image.jpg?v=20261122-1" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -47,17 +48,6 @@
       </div>
     </header>
 
-    <!-- 手機版友善提示與分頁切換（僅小螢幕顯示） -->
-    <div class="mobile-desktop-tip">💻 v1 目前以電腦版三欄畫面最清楚，手機順手版 v1.1 優化中（手機仍可點下方頁籤使用）</div>
-    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="功能切換">
-      <button class="mobile-tab-btn is-active" data-tab="edit" type="button">1. 填寫資料</button>
-      <button class="mobile-tab-btn" data-tab="preview" type="button">2. 首頁預覽</button>
-      <button class="mobile-tab-btn" data-tab="audit" type="button">
-        <span>3. 評分建議</span>
-        <span id="mobile-score-pill" class="mobile-score-pill">0 分</span>
-      </button>
-    </nav>
-
     <!-- 三欄主工作台 -->
     <main class="workspace-grid">
       <!-- 左欄：輸入與新手引導 -->
@@ -67,6 +57,15 @@
             <button id="btn-mode-free" class="mode-btn is-active" type="button">✍️ 自由填寫</button>
             <button id="btn-mode-wizard" class="mode-btn" type="button">🪄 3 題快速起稿（新手推薦）</button>
           </div>
+        </div>
+
+        <!-- 手機版即時體檢狀態條（僅小螢幕顯示） -->
+        <div class="mobile-live-bar" aria-live="polite">
+          <div class="mobile-live-info">
+            <span id="mobile-live-score" class="mobile-live-score">0 分・等級 B</span>
+            <span id="mobile-live-meta" class="mobile-live-meta">簡介 0 行・✓ 符合規定</span>
+          </div>
+          <button id="btn-mobile-quick-preview" class="mobile-live-btn" type="button">📱 看預覽 →</button>
         </div>
 
         <!-- 自由填寫區 -->
@@ -102,8 +101,7 @@
               </label>
               <span id="count-name" class="char-counter">0 / 30</span>
             </div>
-            <input id="field-name" class="text-input" type="text" maxlength="60"
-              placeholder="建議格式：你的暱稱｜一句話說明你在做什麼" />
+            <input id="field-name" class="text-input" type="text" maxlength="60" placeholder="建議格式：你的暱稱｜一句話說明你在做什麼" />
           </div>
 
           <div class="form-group">
@@ -128,17 +126,24 @@
               <div id="avatar-thumb-preview" class="avatar-thumb-preview" aria-hidden="true">三</div>
               <div class="avatar-controls">
                 <div class="avatar-btn-row">
-                  <input id="avatar-upload" class="hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                  <input id="avatar-upload" class="hidden" type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif" />
                   <button id="btn-upload-avatar" class="btn-outline-sm" type="button">📷 選一張照片預覽</button>
                   <button id="btn-clear-avatar" class="btn-ghost-sm" type="button">改用預設色塊</button>
                 </div>
                 <div id="avatar-presets" class="avatar-presets" aria-label="預設頭像背景色">
-                  <button class="avatar-preset-btn is-active" data-preset="#ea580c" style="background:#ea580c" type="button" title="暖橘"></button>
-                  <button class="avatar-preset-btn" data-preset="#0f766e" style="background:#0f766e" type="button" title="青綠"></button>
-                  <button class="avatar-preset-btn" data-preset="#2563eb" style="background:#2563eb" type="button" title="海軍藍"></button>
-                  <button class="avatar-preset-btn" data-preset="#9333ea" style="background:#9333ea" type="button" title="葡萄紫"></button>
-                  <button class="avatar-preset-btn" data-preset="#be123c" style="background:#be123c" type="button" title="莓果紅"></button>
-                  <button class="avatar-preset-btn" data-preset="#27272a" style="background:#27272a" type="button" title="極簡黑"></button>
+                  <button class="avatar-preset-btn is-active" data-preset="#ea580c" style="background:#ea580c"
+                    type="button" title="暖橘"></button>
+                  <button class="avatar-preset-btn" data-preset="#0f766e" style="background:#0f766e" type="button"
+                    title="青綠"></button>
+                  <button class="avatar-preset-btn" data-preset="#2563eb" style="background:#2563eb" type="button"
+                    title="海軍藍"></button>
+                  <button class="avatar-preset-btn" data-preset="#9333ea" style="background:#9333ea" type="button"
+                    title="葡萄紫"></button>
+                  <button class="avatar-preset-btn" data-preset="#be123c" style="background:#be123c" type="button"
+                    title="莓果紅"></button>
+                  <button class="avatar-preset-btn" data-preset="#27272a" style="background:#27272a" type="button"
+                    title="極簡黑"></button>
                 </div>
               </div>
             </div>
@@ -169,8 +174,7 @@
             </div>
             <div class="form-group">
               <label class="field-label" for="field-link-label">連結顯示文字（選填）</label>
-              <input id="field-link-label" class="text-input" type="text" maxlength="40"
-                placeholder="例如：點我看今日菜單" />
+              <input id="field-link-label" class="text-input" type="text" maxlength="40" placeholder="例如：點我看今日菜單" />
             </div>
           </div>
 
@@ -210,6 +214,10 @@
               <button id="btn-load-b" class="btn-ghost-sm" type="button" disabled>載入 B 版</button>
             </div>
           </div>
+
+          <div class="mobile-next-actions">
+            <button id="btn-mobile-to-preview" class="btn-primary btn-full" type="button">📱 看 1:1 手機預覽 →</button>
+          </div>
         </div>
 
         <!-- 3 題快速起稿精靈（AI 小白模式） -->
@@ -242,12 +250,14 @@
 
           <div class="form-group">
             <label class="field-label" for="wiz-value">第 2 題：別人來找你／追蹤你，能得到什麼好處或特色？</label>
-            <input id="wiz-value" class="text-input" type="text" maxlength="70" placeholder="例如：每天現調純米粉漿，外酥內 Q 還能先 LINE 預訂不用等" />
+            <input id="wiz-value" class="text-input" type="text" maxlength="70"
+              placeholder="例如：每天現調純米粉漿，外酥內 Q 還能先 LINE 預訂不用等" />
           </div>
 
           <div class="form-group">
             <label class="field-label" for="wiz-action">第 3 題：你最希望看完首頁的人接下來做哪一件事？</label>
-            <input id="wiz-action" class="text-input" type="text" maxlength="50" placeholder="例如：點下面連結看今日菜單跟 Google 地圖" />
+            <input id="wiz-action" class="text-input" type="text" maxlength="50"
+              placeholder="例如：點下面連結看今日菜單跟 Google 地圖" />
           </div>
 
           <div class="form-group">
@@ -410,6 +420,16 @@
       </section>
     </main>
 
+    <!-- 手機版底部單手切換列（僅小螢幕顯示） -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="功能切換">
+      <button class="mobile-tab-btn is-active" data-tab="edit" type="button">✍️ 填寫</button>
+      <button class="mobile-tab-btn" data-tab="preview" type="button">📱 預覽</button>
+      <button class="mobile-tab-btn" data-tab="audit" type="button">
+        <span>🩺 評分</span>
+        <span id="mobile-score-pill" class="mobile-score-pill">0 分</span>
+      </button>
+    </nav>
+
     <!-- 底部 Footer -->
     <footer class="site-footer">
       <span>免費免登入小工具・資料僅存於你的瀏覽器本機・歡迎自由體驗</span>
@@ -422,7 +442,8 @@
   </div>
 
   <!-- 平台限制小抄彈窗 -->
-  <div id="rules-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="rules-modal-title">
+  <div id="rules-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+    aria-labelledby="rules-modal-title">
     <div class="modal-card">
       <div class="modal-head">
         <h2 id="rules-modal-title">📌 為什麼先不要直接在 Threads 裡反覆修改？</h2>
@@ -432,7 +453,8 @@
         <ul class="rules-list">
           <li><strong>顯示名稱（上限 30 字）：</strong>14 天內最多只能改 <strong>2 次</strong>，一旦把次數用完就得等兩週後才能再改。</li>
           <li><strong>帳號 ID（@handle）：</strong>與 IG 同步連動，一樣有 <strong>14 天修改冷卻限制</strong>，建議確定好再改，別邊想邊試。</li>
-          <li><strong>個人簡介（上限 150 字）：</strong>雖然隨時可改，但簡介內的網址<strong>不能直接點擊</strong>，加上手機首屏高度有限，建議排成「定位／特色／下一步」<strong>3～5 行</strong>。</li>
+          <li><strong>個人簡介（上限 150
+              字）：</strong>雖然隨時可改，但簡介內的網址<strong>不能直接點擊</strong>，加上手機首屏高度有限，建議排成「定位／特色／下一步」<strong>3～5 行</strong>。</li>
           <li><strong>外部連結（只有 1 個正式欄位）：</strong>Threads 只給一格可點擊網址，放 LINE 官方帳號、Google 地圖、菜單或免費小工具最實用。</li>
           <li><strong>主題標籤（最多 3 個）：</strong>放上你想被脆友搜尋到的主題，可以讓對你有興趣的人一秒知道這裡聊什麼。</li>
         </ul>

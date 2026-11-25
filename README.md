@@ -5,7 +5,7 @@
 - **正式線上體驗**：https://philko2017.github.io/threads-profile-check/
 - **實機電腦版截圖**：[desktop-preview.jpg](web/desktop-preview.jpg)（三欄工作台：左欄填寫與新手起稿／中欄 1:1 擬真手機預覽／右欄即時評分與 3 版改寫）
 - **GitHub 專案**：https://github.com/philko2017/threads-profile-check
-- **持續優化原則**：目前為 v1 公開版（電腦版體驗最完整，手機順手版 v1.1 排程中），未來每次功能優化與改版都會同步更新此網頁並發佈新貼文通知大家。
+- **持續優化原則**：目前為 **v1.1 雙端順手版**（電腦版三欄工作台＋手機版底部單手切換列與即時狀態條），未來每次功能優化與改版都會同步更新此網頁並發佈新貼文通知大家。
 
 ---
 

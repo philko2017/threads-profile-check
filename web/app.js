@@ -276,6 +276,16 @@
     const total = Math.max(0, Math.min(100, Number(report.total) || 0));
     $('score-total-num').textContent = String(total);
     $('mobile-score-pill').textContent = `${total} 分`;
+    if ($('mobile-live-score')) {
+      $('mobile-live-score').textContent = `${total} 分・等級 ${report.grade || 'B'}`;
+    }
+    if ($('mobile-live-meta')) {
+      const bioLines = String(state.bio || '').split(/\r?\n/).filter((l) => l.trim()).length;
+      const nameLen = String(state.displayName || '').trim().length;
+      const bioLen = String(state.bio || '').trim().length;
+      const ruleOk = nameLen <= 30 && bioLen <= 150;
+      $('mobile-live-meta').textContent = `簡介 ${bioLines} 行・${ruleOk ? '✓ 符合規定' : '⚠ 請留意字數上限'}`;
+    }
 
     const arc = $('score-ring-arc');
     const offset = RING_CIRCUMFERENCE * (1 - total / 100);
@@ -509,6 +519,9 @@
     Object.keys(map).forEach((k) => {
       $(map[k]).classList.toggle('is-tab-active', k === tab);
     });
+    if (window.innerWidth < 900) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   function switchEditMode(mode) {
@@ -800,6 +813,12 @@
     document.querySelectorAll('.mobile-tab-btn').forEach((btn) => {
       btn.addEventListener('click', () => switchMobileTab(btn.dataset.tab));
     });
+    if ($('btn-mobile-quick-preview')) {
+      $('btn-mobile-quick-preview').addEventListener('click', () => switchMobileTab('preview'));
+    }
+    if ($('btn-mobile-to-preview')) {
+      $('btn-mobile-to-preview').addEventListener('click', () => switchMobileTab('preview'));
+    }
 
     $('btn-open-rules').addEventListener('click', () => $('rules-modal').classList.remove('hidden'));
     $('btn-close-rules').addEventListener('click', () => $('rules-modal').classList.add('hidden'));
